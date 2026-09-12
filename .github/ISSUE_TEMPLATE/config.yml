@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 想先看看项目在做什么
+    url: https://github.com/SXAUICA/international-student-toolkit/blob/main/README.md
+    about: README 里有目录结构、坐标约定和已知问题清单
+  - name: 想参与开发
+    url: https://github.com/SXAUICA/international-student-toolkit/blob/main/CONTRIBUTING.md
+    about: 改动约定、地图数据怎么改、红线是什么
