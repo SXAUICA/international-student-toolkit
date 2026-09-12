@@ -10,6 +10,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>留学生第一周指南 · Your First Week</title>
+<!-- PWA：装到手机桌面后可以像 App 一样打开，且离线可用 -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFD60A">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="留学生指南">
+<meta name="format-detection" content="telephone=no">
 <style>
   :root{
     --ink:#0f172a; --body:#334155; --muted:#64748b; --line:#e2e8f0;
@@ -767,6 +775,14 @@
       btn.classList.add('on');
     });
   });
+
+  // ================= PWA：注册 Service Worker =================
+  // 只有 http(s) 托管时才能注册；本地双击（file://）跳过，避免报错
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () { /* 注册失败不影响页面使用 */ });
+    });
+  }
 
   // ================= 校园地图 =================
   // 坐标系沿用课设 map_data.js：x 为横向百分比，y 从底边起算（OCR 像素坐标翻转而来）。
