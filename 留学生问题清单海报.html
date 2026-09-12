@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>留学生问题清单 · 竖版海报</title>
+<style>
+  /* 固定 1080 宽画布，专供导出长图（微信可直接发） */
+  :root{
+    --ink:#0f172a; --body:#334155; --muted:#64748b;
+    --line:#e2e8f0; --bg:#eef2f7; --card:#ffffff;
+    --blue:#1e3a8a; --blue-mid:#1d4ed8; --blue-l:#eff6ff; --blue-b:#93c5fd;
+    --red:#b91c1c; --red-l:#fef2f2; --red-b:#fca5a5;
+    --green:#047857; --green-l:#ecfdf5; --green-b:#6ee7b7;
+    --amber:#b45309; --amber-l:#fef3c7; --amber-b:#fcd34d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    width:1080px; background:var(--bg); color:var(--ink); line-height:1.6;
+    font-family:"Microsoft YaHei","PingFang SC","Source Han Sans SC",sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ================= HERO ================= */
+  .hero{background:linear-gradient(150deg,#1e3a8a 0%,#1d4ed8 62%,#2563eb 100%);color:#fff;padding:52px 56px 44px;}
+  .kicker{font-size:17px;letter-spacing:3px;color:#bfdbfe;font-weight:700;}
+  .hero h1{font-size:58px;line-height:1.16;letter-spacing:2px;margin:14px 0 0;font-weight:800;}
+  .hero h1 em{font-style:normal;color:#93c5fd;}
+  .hero .from{font-size:16px;color:#dbeafe;margin-top:16px;line-height:1.7;max-width:900px;}
+  .hero .from b{color:#fff;}
+
+  .stats{display:flex;gap:16px;margin-top:30px;}
+  .stat{flex:1;background:rgba(255,255,255,.13);border:1.5px solid rgba(255,255,255,.42);border-radius:14px;padding:16px 20px 18px;}
+  .stat .k{font-size:15px;font-weight:700;color:#dbeafe;letter-spacing:1px;}
+  .stat .n{font-size:52px;font-weight:800;line-height:1.05;margin-top:6px;}
+  .stat .n small{font-size:20px;margin-left:4px;}
+  .stat .t{font-size:14px;color:#e0e7ff;line-height:1.5;margin-top:6px;}
+  .stat.a{border-color:#6ee7b7;} .stat.a .n{color:#6ee7b7;}
+  .stat.b{border-color:#93c5fd;} .stat.b .n{color:#bfdbfe;}
+  .stat.c{border-color:#fca5a5;} .stat.c .n{color:#fecaca;}
+
+  /* ================= 原则 ================= */
+  .principles{display:flex;gap:16px;padding:26px 56px 0;}
+  .principle{flex:1;background:var(--amber-l);border:2px solid var(--amber-b);border-radius:14px;padding:16px 20px;}
+  .principle .h{font-size:16px;font-weight:800;color:var(--amber);margin-bottom:6px;}
+  .principle p{font-size:15px;color:#78350f;line-height:1.6;}
+
+  /* ================= 区块标题 ================= */
+  .sec{padding:30px 56px 0;}
+  .sec-head{display:flex;align-items:center;gap:14px;padding-bottom:12px;border-bottom:4px solid var(--blue);}
+  .sec-head .tag{font-size:16px;font-weight:800;color:#fff;background:var(--blue);border-radius:8px;padding:5px 16px;letter-spacing:1px;flex:none;}
+  .sec-head h2{font-size:32px;letter-spacing:1px;}
+  .sec-head .cnt{margin-left:auto;font-size:16px;color:var(--muted);}
+  .sec.a .sec-head{border-color:var(--green);} .sec.a .sec-head .tag{background:var(--green);}
+  .sec.b .sec-head{border-color:var(--blue-mid);} .sec.b .sec-head .tag{background:var(--blue-mid);}
+  .sec.c .sec-head{border-color:var(--red);} .sec.c .sec-head .tag{background:var(--red);}
+  .lede{font-size:16px;color:var(--body);background:var(--card);border-left:6px solid var(--blue);border-radius:10px;padding:14px 20px;margin-top:18px;}
+  .lede b{color:var(--ink);}
+  .lede.ok{border-left-color:var(--green);background:var(--green-l);}
+  .lede.warn{border-left-color:var(--red);background:var(--red-l);}
+
+  /* ================= A 卡片 ================= */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px;}
+  .card{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:16px 18px 15px;}
+  .card .hd{display:flex;align-items:baseline;gap:10px;}
+  .card .no{font-size:15px;font-weight:800;color:#fff;background:var(--green);border-radius:7px;padding:2px 10px;flex:none;}
+  .card h3{font-size:20px;line-height:1.35;}
+  .card p{font-size:15px;color:var(--body);line-height:1.55;margin-top:8px;}
+  .card p b{color:var(--ink);}
+  .card .cost{display:inline-block;font-size:14px;font-weight:700;color:var(--amber);background:var(--amber-l);border-radius:7px;padding:2px 11px;margin-top:10px;}
+  .card .cost.zero{color:var(--green);background:var(--green-l);}
+
+  /* ================= 表格 ================= */
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden;margin-top:18px;font-size:15px;}
+  th{background:var(--blue-l);color:var(--blue);font-size:15px;text-align:left;padding:12px 16px;border-bottom:3px solid var(--blue-b);}
+  td{padding:12px 16px;border-bottom:1px solid var(--line);color:var(--body);vertical-align:top;line-height:1.55;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:nth-child(even){background:#f8fafc;}
+  td.id{font-weight:800;color:var(--blue-mid);white-space:nowrap;width:62px;}
+  td.name{color:var(--ink);font-weight:700;}
+  td.who{color:var(--blue);white-space:nowrap;}
+  table.c th{background:var(--red-l);color:var(--red);border-bottom-color:var(--red-b);}
+  table.c td.id{color:var(--red);}
+
+  /* ================= 底部 ================= */
+  .bottom{padding:30px 56px 0;}
+  .action{background:var(--blue-l);border:2px solid var(--blue-b);border-radius:16px;padding:22px 26px;}
+  .action h3{font-size:24px;color:var(--blue);margin-bottom:14px;}
+  ol.do{list-style:none;counter-reset:d;display:grid;gap:10px;}
+  ol.do li{counter-increment:d;position:relative;padding-left:44px;font-size:16px;color:var(--body);line-height:1.5;}
+  ol.do li::before{content:counter(d);position:absolute;left:0;top:1px;width:29px;height:29px;border-radius:50%;background:var(--blue-mid);color:#fff;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+  ol.do li b{color:var(--ink);}
+  .hard{background:var(--red-l);border:2px solid var(--red-b);border-radius:16px;padding:20px 26px;margin-top:16px;}
+  .hard h3{font-size:20px;color:var(--red);margin-bottom:8px;}
+  .hard p{font-size:17px;color:#7f1d1d;font-weight:700;line-height:1.6;}
+  .hard span{font-size:15px;color:#9f1239;font-weight:400;display:block;margin-top:8px;}
+
+  .foot{padding:26px 56px 44px;}
+  .note{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:18px 22px;font-size:15px;color:var(--body);line-height:1.65;}
+  .note b{color:var(--ink);}
+  .sign{margin-top:18px;text-align:center;font-size:14px;color:var(--muted);line-height:1.8;}
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="kicker">国协 · 留学生工作</div>
+    <h1>留学生问题清单<br><em>37 条诉求，三档拆解</em></h1>
+    <div class="from">依据 <b>2026-09-12</b> 两场录音整理：<b>09-12 10.27</b>（在校留学生座谈，学生本人讲问题）＋ <b>Fri 08.45 Usman</b>（Usman 提方案 + 国协内部讨论）</div>
+    <div class="stats">
+      <div class="stat a">
+        <div class="k">A · 可立即解决</div>
+        <div class="n">16<small>条</small></div>
+        <div class="t">不审批、不花钱或只花小钱，国协自己闭环</div>
+      </div>
+      <div class="stat b">
+        <div class="k">B · 需协调推动</div>
+        <div class="n">11<small>条</small></div>
+        <div class="t">国协写方案，老师出面找部门</div>
+      </div>
+      <div class="stat c">
+        <div class="k">C · 短期难解决</div>
+        <div class="n">10<small>条</small></div>
+        <div class="t">卡在政策与外部系统，但都能缓解</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="principles">
+    <div class="principle">
+      <div class="h">原则一 · 先解决问题，再办活动</div>
+      <p>内部讨论原话：基础的食品需求都没解决，就叫人出去玩，这是错位。</p>
+    </div>
+    <div class="principle">
+      <div class="h">原则二 · 先挑五条做</div>
+      <p>Usman 的说法：学生提十条建议，我们先解决五条，剩下的随时间慢慢推。</p>
+    </div>
+  </div>
+
+  <div class="sec a">
+    <div class="sec-head">
+      <span class="tag">A 档</span>
+      <h2>可立即解决</h2>
+      <span class="cnt">国协 + 志愿者就能闭环 · 16 条</span>
+    </div>
+    <div class="lede ok">共同点：<b>不需要任何人批准</b>，最多花几十块打印费，两周内可全部启动。</div>
+
+    <div class="grid">
+
+      <div class="card">
+        <div class="hd"><span class="no">A1</span><h3>迎新讲座（多场次）</h3></div>
+        <p>讲校园地图、各部门职能、图书馆、公交、安全。<b>学生分散到月底，来一批讲一场。</b></p>
+        <div class="cost zero">成本：0</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A2</span><h3>英文校园地图</h3></div>
+        <p>拿现有中文地图直接翻译，标出图书馆、外事处、保卫处、食堂、体育馆、留学生公寓。</p>
+        <div class="cost">成本：打印费</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A3</span><h3>公寓加英文标识</h3></div>
+        <p>别的楼都有编号指路牌，唯独留学生公寓只有中文。<b>先贴临时纸质牌，再申请正式双语牌。</b></p>
+        <div class="cost">成本：几十元</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A4</span><h3>留学生大群 + 双语通知</h3></div>
+        <p>讲座现场拉群，公告置顶双语，志愿者轮值答疑。石老师已不再限制建群。</p>
+        <div class="cost zero">成本：0</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A5</span><h3>需求问卷（中英双语）</h3></div>
+        <p>先知道学生缺什么，再定活动。Usman 愿意牵头出题。</p>
+        <div class="cost zero">成本：0</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A6</span><h3>食堂菜单中英对照</h3></div>
+        <p>拍照 → 翻译 → 带图 A4 塑封放档口。同时问食堂能否出正式英文菜单。</p>
+        <div class="cost">成本：打印塑封费</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A7</span><h3>清真餐厅清单</h3></div>
+        <p>校内外清真餐馆与兰州拉面的地址、营业时间、招牌菜、价格，配照片。</p>
+        <div class="cost zero">成本：0</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A8</span><h3>生活采购一页纸</h3></div>
+        <p>超市、菜市场、基本食材中英对照、快递地址填写、免费公交与常用线路。</p>
+        <div class="cost">成本：打印费</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A9</span><h3>就医陪同志愿者</h3></div>
+        <p>值班表 + 陪诊/电话翻译 + 挂号报销流程一页纸，值班号置顶群公告。</p>
+        <div class="cost zero">成本：0</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A10</span><h3>中文语伴 + 文化沙龙</h3></div>
+        <p>每周 1 小时（建议周日晚 7—8 点），自愿参加，游戏与中英文互教。</p>
+        <div class="cost zero">成本：0</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A11</span><h3>校园导览 + 太谷导览</h3></div>
+        <p>带一次 campus tour（图书馆、体育馆、游泳馆、保卫处），再一次逛太谷、教坐公交。</p>
+        <div class="cost zero">成本：0</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A12</span><h3>公寓入住接待台</h3></div>
+        <p>前台安排老生 + 志愿者，带路、发钥匙、讲门禁报修。按天排班，不集中两天。</p>
+        <div class="cost zero">成本：0</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A13</span><h3>留学生公寓门口摆花</h3></div>
+        <p>Usman 指出：别的公寓门口都有花，只有留学生公寓没有，这是「被区别对待」。</p>
+        <div class="cost">成本：几十元</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A14</span><h3>志愿者机制化 + 发证书</h3></div>
+        <p><b>留学生本人当负责人</b>参与策划，会议改双语；活动结束发证书，可写进简历。</p>
+        <div class="cost">成本：证书打印费</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A15</span><h3>学习通使用教程</h3></div>
+        <p>注册、扫码进课、看资料、交作业、签到，做成中英图文，讲座上讲一遍。</p>
+        <div class="cost zero">成本：0</div>
+      </div>
+
+      <div class="card">
+        <div class="hd"><span class="no">A16</span><h3>「新生第一周」手册</h3></div>
+        <p>把手机卡、银行卡、24 小时住宿登记、体检、地图、吃饭、就医合成一册，落地就发。</p>
+        <div class="cost">成本：打印费</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="sec b">
+    <div class="sec-head">
+      <span class="tag">B 档</span>
+      <h2>需要老师或学校部门推动</h2>
+      <span class="cnt">能做，但要协调 · 11 条</span>
+    </div>
+    <div class="lede">共同点：<b>国协写方案、老师出面</b>。学生自己去提容易被忽略，走外事处口径成功率更高。</div>
+
+    <table>
+      <thead><tr><th>#</th><th>问题</th><th>推动方向</th><th>找谁</th></tr></thead>
+      <tbody>
+        <tr><td class="id">B1</td><td class="name">讲座要有老师站台</td><td>请 2 位老师，其中 1 位英语好，讲中国文化与饮食</td><td class="who">外事处</td></tr>
+        <tr><td class="id">B2</td><td class="name">宿舍楼、路牌没有英文</td><td>换正式双语标识，先在留学生公寓试点</td><td class="who">后勤 / 保卫处</td></tr>
+        <tr><td class="id">B3</td><td class="name">官网英文版多年没更新</td><td>补宿舍、洗漱间、厨房照片；说明是否提供被褥</td><td class="who">宣传 / 外事处</td></tr>
+        <tr><td class="id">B4</td><td class="name">外事处、宿管、保卫处不会英语</td><td>值班岗位安排能讲英语的人，或配翻译支持</td><td class="who">外事处 / 宿管</td></tr>
+        <tr><td class="id">B5</td><td class="name">不给课程大纲、不给英文教材</td><td>开学前发大纲，讲义 PPT 提前上传，别考前才给</td><td class="who">教务处 / 老师</td></tr>
+        <tr><td class="id">B6</td><td class="name">考试临时通知、资料给得晚</td><td>提前通知考试并提前发复习资料（中国学生同样受益）</td><td class="who">教务处 / 老师</td></tr>
+        <tr><td class="id">B7</td><td class="name">图书馆只有中文书，数据库进不去</td><td>增加英文馆藏；把校园网 + 微信企业认证流程写成双语说明</td><td class="who">图书馆</td></tr>
+        <tr><td class="id">B8</td><td class="name">中文课只一学期，还排第二学期</td><td>延长到两个学期、第一学期就开 —— 学生自己提的核心诉求</td><td class="who">教务处</td></tr>
+        <tr><td class="id">B9</td><td class="name">没有官方接机，靠学长私人帮忙</td><td>学校组织或收费接机；至少给官方「落地后怎么走」指南</td><td class="who">外事处</td></tr>
+        <tr><td class="id">B10</td><td class="name">频繁搬宿舍，可能要再搬回去</td><td>决定前先征求意见（学生自己提了投票），理由一次讲清</td><td class="who">宿管 / 学院</td></tr>
+        <tr><td class="id">B11</td><td class="name">开斋节、古尔邦节撞论文与实验</td><td>排考试、实验、集体活动时避开，或给替代安排</td><td class="who">教务处 / 学院</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sec c">
+    <div class="sec-head">
+      <span class="tag">C 档</span>
+      <h2>短期难解决（但都能缓解）</h2>
+      <span class="cnt">如实说明 · 10 条</span>
+    </div>
+    <div class="lede warn">卡在政策、外部企业或学校层面。<b>但每条都有缓解动作，不要回一句「办不了」。</b></div>
+
+    <table class="c">
+      <thead><tr><th>#</th><th>真实障碍</th><th>缓解动作（我们还能做什么）</th></tr></thead>
+      <tbody>
+        <tr><td class="id">C1</td><td class="name">机场 WiFi 必须用中国手机号</td><td>写进行前指南；给接机人电话，落地即报平安</td></tr>
+        <tr><td class="id">C2</td><td class="name">国际漫游在中国大陆不可用</td><td>行前告知；到校第一天先办电话卡，并给校园 WiFi 接入步骤</td></tr>
+        <tr><td class="id">C3</td><td class="name">共享单车人脸识别，护照反复被拒</td><td>先用校园免费公交；老生带着注册，失败就换品牌</td></tr>
+        <tr><td class="id">C4</td><td class="name">银行外籍开户限号、各网点要求不一</td><td>提前踩点问清材料与限额，预约分批带人，先带 1 人试办</td></tr>
+        <tr><td class="id">C5</td><td class="name">微信支付要手机号 + 银行卡</td><td>把「电话卡 → 银行卡 → 微信实名」串成一条路线讲清</td></tr>
+        <tr><td class="id">C6</td><td class="name">高德在太谷查不到公交到站</td><td>直接教学生改用百度地图查公交</td></tr>
+        <tr><td class="id">C7</td><td class="name">清真食堂供给不足</td><td>先用 A7 的清真餐馆清单兜底，再向食堂反映</td></tr>
+        <tr><td class="id">C8</td><td class="name">校医院急诊响应差</td><td>志愿者陪诊兜住第一次就医；同时把案例如实上报学校</td></tr>
+        <tr><td class="id">C9</td><td class="name">办签证期间护照被押，买不了火车票</td><td>提前告知只能包车或坐汽车，带队安排里预留时间</td></tr>
+        <tr><td class="id">C10</td><td class="name">语言文化融入，活动解决不了</td><td>靠 A10 语伴 + A15 教程 + 推动 B8 延长中文课，长期做</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="bottom">
+    <div class="action">
+      <h3>本周就能启动的五件事</h3>
+      <ol class="do">
+        <li><b>建群 + 双语群公告</b> —— 当天就能做（A4）</li>
+        <li><b>英文校园地图电子版</b> —— 拿中文图翻译（A2）</li>
+        <li><b>第一场迎新讲座</b> —— 找石老师和英语好的老师（A1 + B1）</li>
+        <li><b>食堂菜单拍照翻译</b> —— 志愿者分头做（A6）</li>
+        <li><b>就医值班表 + 紧急联系人</b>（A9）</li>
+      </ol>
+    </div>
+    <div class="hard">
+      <h3>需要尽快向上反馈的三条硬骨头</h3>
+      <p>校医院急诊响应（C8）· 搬宿舍反复（B10）· 中文课延长（B8）</p>
+      <span>这三条志愿者解决不了，但必须让学校知道。</span>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="note">
+      <b>整理说明：</b>录音转写把「太原」写成了「台湾」——学生说的 taiwan airport 指太原武宿机场，traveling to taiwan 指去太原做体检。说话人 1/2/4 是国协学生，3/5/6/7/8 是在校留学生；除石老师和 Usman 外，其他人名录音不清晰，未写入。<br>
+      学生原话里最重的一句是<b>「学校不知道该怎么管理留学生」</b>，A / B 两档就是把这句话拆成能落地的事。
+    </div>
+    <div class="sign">
+      留学生问题清单 · 依据 2026-09-12 两场录音整理<br>
+      配套文件：《留学生接待流程说明》·《留学生接待路线图》
+    </div>
+  </div>
+
+</body>
+</html>

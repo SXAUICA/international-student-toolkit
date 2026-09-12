@@ -1,0 +1,11 @@
+# 原始录音转写：含学生本人对学校的具体抱怨和可辨识细节，不上公开仓库
+*_原文.docx
+*_导读.docx
+
+# 中间产物
+_nodes_raw.json
+
+# 系统文件
+Thumbs.db
+desktop.ini
+.DS_Store

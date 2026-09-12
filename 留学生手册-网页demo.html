@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<!--
+  留学生第一周指南 · 网页 demo
+  设计目标：手机优先、离线可用、中英双语同屏（可切三态）
+  待替换的占位：所有电话号码、地址、群二维码、食堂价格
+  说明：不引用任何外部资源（无 CDN / 无 Google Fonts），国内可直接打开
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>留学生第一周指南 · Your First Week</title>
+<style>
+  :root{
+    --ink:#0f172a; --body:#334155; --muted:#64748b; --line:#e2e8f0;
+    --bg:#f1f5f9; --card:#fff;
+    --blue:#1e3a8a; --blue-mid:#1d4ed8; --blue-l:#eff6ff; --blue-b:#bfdbfe;
+    --red:#b91c1c; --red-l:#fef2f2; --red-b:#fca5a5;
+    --green:#047857; --green-l:#ecfdf5; --green-b:#6ee7b7;
+    --amber:#b45309; --amber-l:#fef3c7; --amber-b:#fcd34d;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:"Microsoft YaHei","PingFang SC","Source Han Sans SC",-apple-system,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6;
+    padding-bottom:82px; -webkit-font-smoothing:antialiased;
+  }
+  .app{max-width:760px;margin:0 auto;background:var(--bg);}
+
+  /* ============ 双语切换 ============ */
+  .bi .en{display:block;font-size:.88em;color:var(--muted);font-weight:400;line-height:1.45;margin-top:2px;}
+  body.mode-zh .bi .en{display:none;}
+  body.mode-en .bi .zh{display:none;}
+  body.mode-en .bi .en{display:block;font-size:1em;color:inherit;font-weight:inherit;margin-top:0;}
+
+  /* ============ 顶部 ============ */
+  .hero{background:linear-gradient(160deg,#1e3a8a,#2563eb);color:#fff;padding:26px 20px 22px;}
+  .hero .kicker{font-size:12.5px;letter-spacing:2px;color:#bfdbfe;font-weight:700;}
+  .hero h1{font-size:27px;line-height:1.3;margin-top:8px;font-weight:800;}
+  .hero h1 .en{font-size:15px;color:#dbeafe;font-weight:600;margin-top:4px;}
+  .hero p{font-size:13.5px;color:#dbeafe;margin-top:10px;}
+
+  .lang{display:flex;gap:8px;margin-top:16px;}
+  .lang button{
+    flex:1;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;
+    color:#fff;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.45);
+    border-radius:9px;padding:8px 0;transition:.15s;
+  }
+  .lang button.on{background:#fff;color:var(--blue);border-color:#fff;}
+
+  .alert{
+    display:flex;gap:10px;align-items:flex-start;background:var(--amber-l);border-left:5px solid var(--amber);
+    border-radius:10px;padding:12px 14px;margin:14px 16px 0;font-size:13.5px;color:#78350f;
+  }
+  .alert b{color:#78350f;}
+
+  /* ============ 快捷入口 ============ */
+  .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px;}
+  .quick a{
+    text-decoration:none;background:var(--card);border:1.5px solid var(--line);border-radius:13px;
+    padding:14px 8px;text-align:center;color:var(--ink);box-shadow:0 1px 3px rgba(15,23,42,.06);
+  }
+  .quick a:active{background:var(--blue-l);}
+  .quick .ico{font-size:25px;line-height:1.1;}
+  .quick .t{font-size:13.5px;font-weight:700;margin-top:6px;}
+  .quick .t .en{font-size:11px;color:var(--muted);font-weight:600;}
+  /* ============ 区块 ============ */
+  section{padding:22px 16px 0;}
+  .sec-h{display:flex;align-items:center;gap:9px;padding-bottom:9px;border-bottom:3px solid var(--blue);margin-bottom:14px;}
+  .sec-h .no{
+    flex:none;width:27px;height:27px;border-radius:8px;background:var(--blue);color:#fff;
+    font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;
+  }
+  .sec-h h2{font-size:18.5px;}
+  .sec-h h2 .en{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:1px;}
+  .sec-h.warn{border-color:var(--red);} .sec-h.warn .no{background:var(--red);}
+  .sec-h.ok{border-color:var(--green);} .sec-h.ok .no{background:var(--green);}
+
+  .card{background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:14px 15px;margin-bottom:11px;box-shadow:0 1px 3px rgba(15,23,42,.05);}
+  .card h3{font-size:15.5px;margin-bottom:7px;}
+  .card h3 .en{font-size:12.5px;color:var(--muted);font-weight:600;}
+  .card p{font-size:14px;color:var(--body);}
+  .card ul{list-style:none;display:grid;gap:6px;margin-top:4px;}
+  .card ul li{font-size:14px;color:var(--body);padding-left:17px;position:relative;}
+  .card ul li::before{content:"·";position:absolute;left:4px;font-weight:900;color:var(--blue-mid);}
+  .card.warn{background:var(--red-l);border-color:var(--red-b);}
+  .card.warn h3{color:var(--red);}
+  .card.ok{background:var(--green-l);border-color:var(--green-b);}
+  .card.ok h3{color:var(--green);}
+
+  .steps{list-style:none;counter-reset:s;display:grid;gap:10px;}
+  .steps li{counter-increment:s;position:relative;padding-left:32px;font-size:14px;color:var(--body);}
+  .steps li::before{
+    content:counter(s);position:absolute;left:0;top:1px;width:23px;height:23px;border-radius:50%;
+    background:var(--blue-mid);color:#fff;font-size:12.5px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .steps li b{color:var(--ink);}
+
+  .chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0 4px;}
+  .chain .c{background:var(--blue-l);border:1.5px solid var(--blue-b);color:var(--blue);font-size:13.5px;font-weight:700;border-radius:9px;padding:7px 12px;text-align:center;}
+  .chain .arw{color:var(--muted);font-weight:800;}
+  .mini{font-size:11.5px;color:var(--muted);font-weight:400;display:block;}
+
+  /* 材料清单（可勾选） */
+  .check{display:grid;gap:8px;margin-top:6px;}
+  .check label{display:flex;gap:9px;align-items:flex-start;font-size:14px;color:var(--body);cursor:pointer;}
+  .check input{width:19px;height:19px;margin-top:2px;accent-color:var(--blue-mid);flex:none;}
+  .check input:checked + span{color:var(--muted);text-decoration:line-through;}
+
+  /* 表格 */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:12px;border:1.5px solid var(--line);}
+  table{width:100%;border-collapse:collapse;background:var(--card);font-size:13.5px;min-width:340px;}
+  th{background:var(--blue-l);color:var(--blue);text-align:left;padding:9px 12px;font-size:13px;border-bottom:2px solid var(--blue-b);white-space:nowrap;}
+  td{padding:9px 12px;border-bottom:1px solid var(--line);color:var(--body);vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:nth-child(even){background:#f8fafc;}
+  td.dish{color:var(--ink);font-weight:700;}
+  td.price{white-space:nowrap;color:var(--blue);font-weight:700;}
+  .tagp{display:inline-block;font-size:11px;font-weight:800;color:#fff;background:var(--green);border-radius:5px;padding:1px 6px;margin-left:5px;}
+  .tagp.no{background:var(--red);}
+
+  /* 校园地图 */
+  .mapfilters{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;}
+  .chip{font-family:inherit;font-size:12.5px;font-weight:700;border:1.5px solid var(--line);background:#fff;color:var(--body);border-radius:999px;padding:5px 11px;cursor:pointer;}
+  .chip.on{background:var(--blue);border-color:var(--blue);color:#fff;}
+  .mapbox{position:relative;border-radius:12px;overflow:hidden;border:1.5px solid var(--line);background:#e8edf3;}
+  .mapbox img{display:block;width:100%;height:auto;}
+  #dots,#pins{position:absolute;inset:0;pointer-events:none;}
+  .pin{
+    position:absolute;transform:translate(-50%,-50%);width:20px;height:20px;padding:0;border-radius:50%;
+    border:2px solid #fff;color:#fff;font-size:11px;font-weight:800;font-family:inherit;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(15,23,42,.45);
+    z-index:2;pointer-events:auto;
+  }
+  .pin.todo{border-style:dashed;border-color:#fde68a;}
+  .pin.dim{opacity:.2;}
+  .pin.sel{outline:3px solid #facc15;outline-offset:1px;z-index:6;}
+  /* 全量地点图层 */
+  .mapsearch{margin:10px 0 0;}
+  .mapsearch input{
+    width:100%;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink);background:#fff;
+    border:var(--bw,2.5px) solid var(--ink);border-radius:12px;box-shadow:2px 2px 0 var(--ink);
+    padding:9px 13px;outline:none;
+  }
+  .mapsearch input::placeholder{color:#9a9a9a;font-weight:400;}
+  .dot{
+    position:absolute;transform:translate(-50%,-50%);width:8px;height:8px;padding:0;border-radius:50%;
+    border:1.5px solid var(--ink);cursor:pointer;pointer-events:auto;opacity:.92;background:#777;
+  }
+  .dot.inset{border-style:dashed;}
+  .dot.dim{opacity:.1;}
+  .dot.sel{width:16px;height:16px;outline:3px solid var(--ink);outline-offset:1px;z-index:7;}
+  .legend{list-style:none;display:grid;gap:7px;margin-top:12px;}
+  .legend li{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:var(--body);padding:2px 0;}
+  .legend .n{flex:none;width:20px;height:20px;border-radius:50%;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .legend b{color:var(--ink);}
+  .legend .sub{font-size:12px;color:var(--muted);}
+  .mapnote{font-size:12px;color:var(--muted);margin-top:8px;}
+
+  /* FAQ */
+  details{background:var(--card);border:1.5px solid var(--line);border-radius:12px;margin-bottom:9px;overflow:hidden;}
+  summary{padding:13px 15px;font-size:14.5px;font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:10px;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"＋";color:var(--blue-mid);font-weight:800;flex:none;}
+  details[open] summary::after{content:"－";}
+  details .ans{padding:0 15px 14px;font-size:14px;color:var(--body);border-top:1px solid var(--line);padding-top:11px;}
+
+  /* 急救卡 */
+  .sos-card{background:var(--red);color:#fff;border-radius:13px;padding:16px;margin-bottom:11px;}
+  .sos-card h3{font-size:16px;margin-bottom:10px;}
+  .sos-card h3 .en{color:#fecaca;font-size:12.5px;}
+  .sos-list{display:grid;gap:9px;}
+  .sos-list a{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;text-decoration:none;
+    background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.4);border-radius:10px;
+    padding:11px 13px;color:#fff;font-size:14px;font-weight:700;
+  }
+  .sos-list a:active{background:rgba(255,255,255,.3);}
+  .sos-list .num{font-size:16px;letter-spacing:.5px;white-space:nowrap;}
+
+  /* 底部固定条 */
+  .tabbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:20;background:#fff;border-top:1.5px solid var(--line);
+    padding:9px 14px calc(9px + env(safe-area-inset-bottom));display:flex;gap:10px;
+    box-shadow:0 -2px 12px rgba(15,23,42,.08);
+  }
+  .tabbar a{flex:1;text-decoration:none;text-align:center;font-size:14px;font-weight:800;border-radius:11px;padding:12px 0;}
+  .tabbar .call{background:var(--red);color:#fff;}
+  .tabbar .grp{background:var(--blue-l);color:var(--blue);border:1.5px solid var(--blue-b);}
+
+  footer{padding:26px 16px 10px;text-align:center;font-size:12px;color:var(--muted);line-height:1.9;}
+
+  @media (min-width:700px){
+    .quick{grid-template-columns:repeat(6,1fr);}
+    .hero h1{font-size:32px;}
+  }
+
+  /* ==========================================================
+     视觉主题层：粗描边 + 硬阴影（neo-brutalist）
+     参考用户提供的 UI：黑描边、无模糊硬阴影、亮黄/粉/紫配色、卡片带文件夹页签
+     ========================================================== */
+  :root{
+    --ink:#111111; --body:#2B2B2B; --muted:#6B6B6B; --line:#111111;
+    --bg:#FFF8E1; --card:#FFFFFF;
+    --blue:#111111; --blue-mid:#111111; --blue-l:#FFD60A; --blue-b:#111111;
+    --red:#FF5A5A; --red-l:#FFE9E9; --red-b:#111111;
+    --green:#35D07F; --green-l:#E4F9ED; --green-b:#111111;
+    --amber:#FF8A3D; --amber-l:#FFF0E2; --amber-b:#111111;
+    --sky:#4DA3FF; --pink:#FF4D8D; --purple:#7C5CFC; --lime:#C7F04A; --yellow:#FFD60A;
+    --bw:2.5px; --sh:4px 4px 0 #111; --sh-sm:3px 3px 0 #111; --sh-xs:2px 2px 0 #111;
+  }
+  body{background:var(--bg);}
+  h1,h2,h3,summary{font-weight:900;letter-spacing:-.2px;}
+
+  /* 顶部：亮黄 + 装饰色块 */
+  .hero{background:var(--yellow);color:var(--ink);border-bottom:3px solid var(--ink);position:relative;overflow:hidden;}
+  .hero::before{content:"";position:absolute;width:190px;height:190px;border-radius:50%;background:var(--pink);left:-72px;top:-64px;}
+  .hero::after{content:"";position:absolute;width:230px;height:230px;border-radius:50%;background:var(--purple);right:-96px;bottom:-130px;}
+  .hero>*{position:relative;z-index:1;}
+  .hero .kicker,.hero p,.hero .from{color:var(--ink);}
+  .hero h1{font-size:30px;font-weight:900;line-height:1.2;}
+  .hero h1 .en,.hero p .en,.hero .from .en,.hero .kicker .en{color:#3A3A3A;}
+  .lang button{background:#fff;color:var(--ink);border:var(--bw) solid var(--ink);border-radius:12px;box-shadow:var(--sh-xs);font-weight:900;}
+  .lang button.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  /* 提示条 */
+  .alert{background:#fff;color:var(--ink);border:var(--bw) solid var(--ink);border-left:var(--bw) solid var(--ink);border-radius:16px;box-shadow:var(--sh-sm);}
+  .alert b{color:var(--ink);}
+
+  /* 快捷入口：彩色图标方块 */
+  .quick a{background:#fff;border:var(--bw) solid var(--ink);border-radius:16px;box-shadow:var(--sh-sm);}
+  .quick a:active{background:var(--blue-l);}
+  .quick .ico{
+    display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;font-size:21px;
+    border:var(--bw) solid var(--ink);border-radius:12px;box-shadow:var(--sh-xs);background:var(--yellow);
+  }
+  .quick a:nth-child(1) .ico{background:var(--pink);}
+  .quick a:nth-child(2) .ico{background:var(--sky);}
+  .quick a:nth-child(3) .ico{background:var(--green);}
+  .quick a:nth-child(4) .ico{background:var(--yellow);}
+  .quick a:nth-child(5) .ico{background:var(--red);}
+  .quick a:nth-child(6) .ico{background:var(--purple);}
+  .quick .t{font-weight:800;}
+
+  /* 区块标题 */
+  .sec-h{border-bottom:3px solid var(--ink);}
+  .sec-h .no{
+    width:32px;height:32px;border:var(--bw) solid var(--ink);border-radius:10px;
+    box-shadow:var(--sh-xs);background:var(--yellow);color:var(--ink);font-weight:900;
+  }
+  #s1 .sec-h .no{background:var(--pink);}
+  #s2 .sec-h .no{background:var(--sky);}
+  #s3 .sec-h .no{background:var(--green);}
+  #s4 .sec-h .no{background:var(--yellow);}
+  #s5 .sec-h .no{background:var(--red);}
+  #s6 .sec-h .no{background:var(--purple);}
+  #s7 .sec-h .no{background:var(--red);}
+  #s8 .sec-h .no{background:var(--lime);}
+
+  /* 说明条 */
+  .lede{background:#fff;border:var(--bw) solid var(--ink);border-left:8px solid var(--accent,#111);
+        border-radius:14px;box-shadow:var(--sh-sm);}
+  .lede.ok{border-left-color:var(--green);}
+  .lede.warn{border-left-color:var(--red);}
+
+  /* 卡片 + 文件夹页签 */
+  .card{position:relative;background:#fff;border:var(--bw) solid var(--ink);border-radius:16px;
+        box-shadow:var(--sh);margin:16px 0 24px;}
+  .card::before{
+    content:"";position:absolute;top:-14px;left:18px;width:36%;height:14px;
+    background:var(--accent,var(--yellow));border:var(--bw) solid var(--ink);border-bottom:none;
+    border-radius:10px 10px 0 0;
+  }
+  .card.warn,.card.ok{border:var(--bw) solid var(--ink);}
+  #s1 .card{--accent:var(--pink);}
+  #s2 .card{--accent:var(--sky);}
+  #s3 .card{--accent:var(--green);}
+  #s4 .card{--accent:var(--yellow);}
+  #s5 .card{--accent:var(--red);}
+  #s6 .card{--accent:var(--purple);}
+  #s7 .card{--accent:var(--red);}
+  #s8 .card{--accent:var(--lime);}
+
+  /* 表格 */
+  .tbl-wrap{border:var(--bw) solid var(--ink);border-radius:14px;box-shadow:var(--sh-sm);}
+  th{background:var(--yellow);color:var(--ink);font-weight:900;border-bottom:var(--bw) solid var(--ink);}
+  td{border-bottom:1.5px solid #E6E2D6;}
+
+  /* 步骤序号 / 勾选 */
+  .steps li::before{background:var(--ink);color:#fff;border:2px solid var(--ink);}
+  .check input{accent-color:#111;}
+
+  /* 顺序链条 */
+  .chain .c{background:#fff;border:var(--bw) solid var(--ink);border-radius:12px;color:var(--ink);font-weight:800;box-shadow:var(--sh-xs);}
+
+  /* 急救卡 */
+  .sos-card{background:var(--red);border:var(--bw) solid var(--ink);box-shadow:var(--sh);color:#fff;}
+  .sos-card h3{color:#fff;}
+  .sos-card h3 .en{color:#FFE0E0;}
+  .sos-list a{background:#fff;color:var(--ink);border:var(--bw) solid var(--ink);box-shadow:var(--sh-xs);border-radius:12px;}
+  .sos-list a:active{background:var(--yellow);}
+  .sos-list .num{color:var(--ink);font-weight:900;}
+
+  /* FAQ */
+  details{border:var(--bw) solid var(--ink);border-radius:14px;box-shadow:var(--sh-sm);}
+  details .ans{border-top:2px solid #E6E2D6;}
+  summary::after{color:var(--ink);}
+
+  /* 底部固定条 */
+  .tabbar{border-top:3px solid var(--ink);box-shadow:0 -3px 0 rgba(17,17,17,.08);}
+  .tabbar .grp{background:#fff;color:var(--ink);border:var(--bw) solid var(--ink);box-shadow:var(--sh-xs);}
+  .tabbar .call{background:var(--pink);color:var(--ink);border:var(--bw) solid var(--ink);box-shadow:var(--sh-xs);}
+
+  /* 校园地图 */
+  .chip{background:#fff;border:var(--bw) solid var(--ink);box-shadow:var(--sh-xs);font-weight:800;}
+  .chip.on{background:var(--yellow);color:var(--ink);border-color:var(--ink);}
+  .mapbox{border:var(--bw) solid var(--ink);border-radius:14px;box-shadow:var(--sh-sm);}
+  .pin{border:2px solid var(--ink);color:var(--ink);font-weight:900;box-shadow:1.5px 1.5px 0 var(--ink);}
+  .pin.todo{border-style:dashed;}
+  .pin.sel{outline:3px solid var(--ink);outline-offset:2px;}
+  .legend .n{border:2px solid var(--ink);color:var(--ink);font-weight:900;}
+
+  /* NEW 标签（呼应参考图的徽标） */
+  .badge{
+    display:inline-block;margin-left:8px;padding:1px 9px;font-size:11px;font-weight:900;letter-spacing:.5px;
+    background:var(--pink);color:#fff;border:2px solid var(--ink);border-radius:999px;vertical-align:2px;
+  }
+</style>
+</head>
+<body class="mode-both">
+<div class="app">
+
+  <header class="hero">
+    <div class="kicker bi"><span class="zh">国际交流协会 · 志愿者整理</span><span class="en">Prepared by ICA volunteers</span></div>
+    <h1 class="bi">
+      <span class="zh">留学生第一周指南</span>
+      <span class="en">Your First Week in China</span>
+    </h1>
+    <p class="bi">
+      <span class="zh">办证件、吃饭、出行、看病、学习，都在这一页。</span>
+      <span class="en">Registration, food, transport, medical care and study — all on this page.</span>
+    </p>
+    <div class="lang" role="group" aria-label="语言 / Language">
+      <button type="button" data-mode="both" class="on">中英 Both</button>
+      <button type="button" data-mode="zh">中文</button>
+      <button type="button" data-mode="en">English</button>
+    </div>
+  </header>
+
+  <div class="alert bi">
+    <span class="ico">⚠️</span>
+    <span>
+      <span class="zh">紧急情况（受伤、重病、被偷被抢）<b>直接打电话</b>，不要只在群里发消息。</span>
+      <span class="en">In an emergency, <b>call directly</b> — do not just post in the group chat.</span>
+    </span>
+  </div>
+
+  <nav class="quick">
+    <a href="#s1"><div class="ico">🛏️</div><div class="t bi"><span class="zh">住宿登记</span><span class="en">Registration</span></div></a>
+    <a href="#s2"><div class="ico">📱</div><div class="t bi"><span class="zh">办卡开户</span><span class="en">SIM & Bank</span></div></a>
+    <a href="#s3"><div class="ico">🍜</div><div class="t bi"><span class="zh">吃饭</span><span class="en">Food</span></div></a>
+    <a href="#s4"><div class="ico">🚌</div><div class="t bi"><span class="zh">出行</span><span class="en">Transport</span></div></a>
+    <a href="#s5"><div class="ico">🏥</div><div class="t bi"><span class="zh">看病</span><span class="en">Medical</span></div></a>
+    <a href="#s6"><div class="ico">📚</div><div class="t bi"><span class="zh">学习</span><span class="en">Study</span></div></a>
+  </nav>
+
+  <!-- ================= 1 住宿登记 ================= -->
+  <section id="s1">
+    <div class="sec-h warn">
+      <div class="no">1</div>
+      <h2 class="bi"><span class="zh">到校 24 小时内：临时住宿登记</span><span class="en">Within 24 hours: Residence registration</span></h2>
+    </div>
+
+    <div class="card warn">
+      <h3 class="bi"><span class="zh">这是法律要求，不能拖</span><span class="en">Required by law — do not delay</span></h3>
+      <p class="bi">
+        <span class="zh">外国人入住宿舍或租房，必须在 <b>24 小时内</b> 到公安机关办理住宿登记。未办理会被警告，可并处 2000 元以下罚款，并影响后续签证延期和居留许可。</span>
+        <span class="en">Foreigners staying in a dorm or rented flat must register with the local police within <b>24 hours</b>. Failure may lead to a warning, a fine up to ¥2000, and problems with your visa extension or residence permit.</span>
+      </p>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">怎么做</span><span class="en">What to do</span></h3>
+      <ol class="steps bi">
+        <li><span class="zh">告诉志愿者或老师你已经入住 — 我们会安排人带你去。</span><span class="en">Tell a volunteer or your teacher that you have moved in — we will take you there.</span></li>
+        <li><span class="zh">带护照原件 + 签证 / 入境章 + 住宿证明（宿舍证明或租房合同）。</span><span class="en">Bring your passport, visa/entry stamp and proof of address (dorm letter or rental contract).</span></li>
+        <li><span class="zh">拿到《境外人员临时住宿登记表》后 <b>拍照留存</b>，后面办卡、开户、办居留许可都要用。</span><span class="en">After getting the registration form, <b>photograph it</b> — you will need it for a SIM card, bank account and residence permit.</span></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">去哪儿</span><span class="en">Where to go</span></h3>
+      <ul class="bi">
+        <li><span class="zh">住宿舍：太谷区出入境接待大厅（晋中市公安局太谷分局出入境管理大队）</span><span class="en">Living on campus: Taigu Entry-Exit Reception Hall</span></li>
+        <li><span class="zh">住校外：属地派出所，以老师确认为准</span><span class="en">Living off campus: your local police station — confirm with your teacher</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= 2 办卡开户 ================= -->
+  <section id="s2">
+    <div class="sec-h">
+      <div class="no">2</div>
+      <h2 class="bi"><span class="zh">办电话卡 + 开银行账户</span><span class="en">SIM card & bank account</span></h2>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">顺序不能颠倒</span><span class="en">Follow this order</span></h3>
+      <div class="chain bi">
+        <div class="c"><span class="zh">电话卡</span><span class="en">SIM card</span><span class="mini bi"><span class="zh">必须本人到场</span><span class="en">In person</span></span></div>
+        <div class="arw">→</div>
+        <div class="c"><span class="zh">银行卡</span><span class="en">Bank</span><span class="mini bi"><span class="zh">要留本人手机号</span><span class="en">Needs your phone no.</span></span></div>
+        <div class="arw">→</div>
+        <div class="c"><span class="zh">微信支付</span><span class="en">WeChat Pay</span><span class="mini bi"><span class="zh">绑定后才能扫码付款</span><span class="en">Then you can pay</span></span></div>
+      </div>
+      <p class="bi" style="margin-top:10px;font-size:13.5px;color:#475569">
+        <span class="zh">银行开户要留<b>本人的实名手机号</b>，所以电话卡必须先办。</span>
+        <span class="en">The bank requires a phone number registered to you, so the SIM card must come first.</span>
+      </p>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">出门前带齐（点一下打勾）</span><span class="en">Checklist — tap to tick</span></h3>
+      <div class="check bi">
+        <label><input type="checkbox"><span><span class="zh">护照原件</span><span class="en">Passport (original)</span></span></label>
+        <label><input type="checkbox"><span><span class="zh">临时住宿登记表（或清晰照片）</span><span class="en">Residence registration form</span></span></label>
+        <label><input type="checkbox"><span><span class="zh">录取通知书 / 在读证明（学校盖章）</span><span class="en">Admission letter / study certificate (stamped)</span></span></label>
+        <label><input type="checkbox"><span><span class="zh">少量现金</span><span class="en">A little cash</span></span></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">去哪儿</span><span class="en">Where</span></h3>
+      <ul class="bi">
+        <li><span class="zh">中国移动营业厅（太谷骨科医院对面）— 只有直营厅能办外籍实名，加盟店办不了</span><span class="en">China Mobile (opposite the Taigu Orthopedic Hospital) — only the official branch can register foreign passports</span></li>
+        <li><span class="zh">中国建设银行 太谷支行 — 与移动营业厅同属太谷城区，可一趟走完</span><span class="en">China Construction Bank, Taigu Branch — same area, do both in one trip</span></li>
+      </ul>
+    </div>
+
+    <div class="card warn">
+      <h3 class="bi"><span class="zh">可能白跑一趟，先问我们</span><span class="en">Avoid a wasted trip</span></h3>
+      <p class="bi">
+        <span class="zh">不同网点对材料要求不一样，银行每天能办的外籍开户数量也有限。出发前先在群里问一句，我们会帮你确认能不能办、要不要预约。</span>
+        <span class="en">Different branches ask for different documents, and banks can only handle a few foreign accounts per day. Ask in the group chat first — we will confirm before you go.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= 3 吃饭 ================= -->
+  <section id="s3">
+    <div class="sec-h ok">
+      <div class="no">3</div>
+      <h2 class="bi"><span class="zh">吃饭</span><span class="en">Food</span></h2>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">食堂点菜对照表</span><span class="en">Canteen menu guide</span></h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th class="bi"><span class="zh">中文</span><span class="en">Chinese</span></th>
+            <th class="bi"><span class="zh">English</span><span class="en">英文</span></th>
+            <th class="bi"><span class="zh">价格</span><span class="en">Price</span></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td class="dish">牛肉面<span class="tagp">牛</span></td>
+              <td>Beef noodles</td><td class="price">¥10</td>
+            </tr>
+            <tr>
+              <td class="dish">鸡蛋灌饼<span class="tagp">素</span></td>
+              <td>Egg pancake</td><td class="price">¥5</td>
+            </tr>
+            <tr>
+              <td class="dish">羊肉串<span class="tagp">羊</span></td>
+              <td>Lamb skewers</td><td class="price">¥3/串</td>
+            </tr>
+            <tr>
+              <td class="dish">扬州炒饭<span class="tagp">素</span></td>
+              <td>Fried rice</td><td class="price">¥8</td>
+            </tr>
+            <tr>
+              <td class="dish">红烧肉<span class="tagp no">猪肉</span></td>
+              <td>Braised pork <b>— no pork!</b></td><td class="price">¥12</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mapnote bi">
+        <span class="zh">绿标＝清真可用；红标＝含猪肉，穆斯林同学请避开。</span>
+        <span class="en">Green = halal-friendly; red = contains pork, please avoid.</span>
+      </p>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">常见食材（点菜时给店员看）</span><span class="en">Common ingredients — show this to staff</span></h3>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>中文</th><th>English</th><th class="bi"><span class="zh">能吃吗</span><span class="en">OK?</span></th></tr></thead>
+          <tbody>
+            <tr><td class="dish">牛肉</td><td>Beef</td><td>✅</td></tr>
+            <tr><td class="dish">羊肉</td><td>Lamb / Mutton</td><td>✅</td></tr>
+            <tr><td class="dish">鸡肉</td><td>Chicken</td><td>✅</td></tr>
+            <tr><td class="dish">猪肉</td><td>Pork</td><td>❌</td></tr>
+            <tr><td class="dish">海鲜 / 虾</td><td>Seafood / Shrimp</td><td>⚠️</td></tr>
+            <tr><td class="dish">内脏</td><td>Offal / Intestines</td><td>⚠️</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card ok">
+      <h3 class="bi"><span class="zh">清真餐厅（Halal）</span><span class="en">Halal restaurants</span></h3>
+      <ul class="bi">
+        <li><span class="zh"><b>兰州拉面（校门外）</b> — 清汤牛肉面 ¥12 起，步行 10 分钟</span><span class="en"><b>Lanzhou noodles (outside the gate)</b> — beef noodles from ¥12, 10 min walk</span></li>
+        <li><span class="zh"><b>太谷城区清真餐馆</b> — 详细地址和照片见网页版「吃饭」页</span><span class="en"><b>Halal restaurants in Taigu town</b> — full addresses and photos in the web version</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">不想吃食堂？</span><span class="en">Cooking for yourself</span></h3>
+      <ul class="bi">
+        <li><span class="zh">超市和菜市场位置：见下方示意图「超市」标记</span><span class="en">Supermarket and wet market: see the map below</span></li>
+        <li><span class="zh">米、面、油、鸡蛋 —— 超市都有，包装上有图，照着买不会错</span><span class="en">Rice, flour, oil and eggs are all in the supermarket — just follow the pictures</span></li>
+        <li><span class="zh">不会用筷子？找志愿者要一副叉子，先用着，慢慢学</span><span class="en">New to chopsticks? Ask a volunteer for a fork while you learn</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= 4 出行 ================= -->
+  <section id="s4">
+    <div class="sec-h">
+      <div class="no">4</div>
+      <h2 class="bi"><span class="zh">出行与日常</span><span class="en">Getting around</span></h2>
+    </div>
+
+    <!-- 真实校园地图：底图来自本校《校园导游图系统》课设，坐标由该项目的 OCR 数据换算 -->
+    <div class="card">
+      <h3 class="bi"><span class="zh">校园地图（点数字看说明）</span><span class="en">Campus map — tap a number</span><span class="badge">NEW</span></h3>
+      <div class="mapfilters" role="group" aria-label="筛选 / Filter">
+        <button type="button" class="chip on" data-cat="all">全部 All</button>
+        <button type="button" class="chip" data-cat="dorm">住 Dorm</button>
+        <button type="button" class="chip" data-cat="food">吃 Food</button>
+        <button type="button" class="chip" data-cat="service">服务 Service</button>
+        <button type="button" class="chip" data-cat="study">学 Study</button>
+        <button type="button" class="chip" data-cat="medical">医 Medical</button>
+        <button type="button" class="chip" data-cat="sport">运动 Sport</button>
+        <button type="button" class="chip" data-cat="gate">门 Gate</button>
+        <button type="button" class="chip" data-cat="farm">试验场 Farm</button>
+        <button type="button" class="chip" data-cat="inset">牧站 Inset</button>
+        <button type="button" class="chip" id="btnDots">＋全部地点 199</button>
+      </div>
+      <div class="mapsearch">
+        <input id="mapSearch" type="search" autocomplete="off"
+               placeholder="搜索地点：图书馆 / library / 银行 / bank …">
+      </div>
+      <div class="mapbox" id="mapbox">
+        <img src="校园地图底图.jpg" alt="山西农业大学校园地图">
+        <div id="dots"></div>
+        <div id="pins"></div>
+      </div>
+      <p class="mapnote bi" id="mapInfo">
+        <span class="zh">点地图上的数字或下面的清单，看这个地方是干什么的。</span>
+        <span class="en">Tap a number on the map or in the list below.</span>
+      </p>
+      <ul class="legend" id="legend"></ul>
+      <p class="mapnote bi">
+        <span class="zh">底图与坐标复用了本校《校园导游图系统》课设的高清地图和 126 个景点的 OCR 数据；<b>每个点位都已对照原图标签逐个核对过</b>。<b>留学生公寓楼号、保卫处、外事处、校门位置待确认</b>后再补上，正式版建议实地走一遍校准。</span>
+        <span class="en">Base map and spot coordinates reused from the campus-tour-guide course project (126 OCR-extracted spots); every pin was checked against the original map labels. <b>The international dorm, security office, international office and gate positions still need confirming.</b></span>
+      </p>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">坐公交</span><span class="en">Bus</span></h3>
+      <ul class="bi">
+        <li><span class="zh">查实时到站用 <b>百度地图</b>，高德在太谷查不到公交到站信息</span><span class="en">Use <b>Baidu Maps</b> for real-time bus info — Amap does not work in Taigu</span></li>
+        <li><span class="zh">免费乘车的具体办法，以学校最新通知为准，报到时我们会讲</span><span class="en">Free-ride rules follow the latest school notice — we will explain at orientation</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">去太原</span><span class="en">Going to Taiyuan</span></h3>
+      <ul class="bi">
+        <li><span class="zh">坐高铁从太谷到太原南站约 20 分钟，出站打车约 20 分钟</span><span class="en">High-speed rail to Taiyuan South takes ~20 min, then ~20 min by taxi</span></li>
+        <li><span class="zh"><b>不要一个人去</b>——体检、办签证都跟志愿者一起走，去回都点名</span><span class="en"><b>Never go alone</b> — join a volunteer-led group for medical checks and visa trips</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">共享单车 / 快递</span><span class="en">Shared bikes & parcels</span></h3>
+      <ul class="bi">
+        <li><span class="zh">共享单车注册要人脸识别，护照经常被拒，多试几个品牌，或找志愿者帮忙</span><span class="en">Shared bikes need face verification and often reject passports — try another brand or ask a volunteer</span></li>
+        <li><span class="zh">收快递要写清：宿舍楼号 + 房间号 + 你的手机号，取件时给工作人员看短信</span><span class="en">For parcels, write: dorm building + room + your phone number; show the SMS when collecting</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= 5 看病 ================= -->
+  <section id="s5">
+    <div class="sec-h warn">
+      <div class="no">5</div>
+      <h2 class="bi"><span class="zh">生病了怎么办</span><span class="en">If you get sick</span></h2>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">第一次去医院，找人陪你去</span><span class="en">For your first visit, take a volunteer</span></h3>
+      <ol class="steps bi">
+        <li><span class="zh">在群里说，或直接打值班电话。</span><span class="en">Post in the group chat, or call the duty phone.</span></li>
+        <li><span class="zh">值班志愿者会陪你去，帮忙挂号、跟医生说病情。</span><span class="en">A volunteer will go with you, register you and explain your symptoms to the doctor.</span></li>
+        <li><span class="zh">保留所有发票和病历，报销要用。</span><span class="en">Keep every receipt and medical record — you need them for reimbursement.</span></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">去哪家医院</span><span class="en">Which hospital</span></h3>
+      <ul class="bi">
+        <li><span class="zh"><b>校医院</b> — 小病、开药。注意：夜间值班人手少，重病直接去市区医院</span><span class="en"><b>Campus clinic</b> — minor issues. Night duty is thin; for serious problems go to the city hospital</span></li>
+        <li><span class="zh"><b>晋中市 / 太谷区医院</b> — 急诊、检查。地址和路线见网页「看病」页</span><span class="en"><b>Jinzhong / Taigu hospital</b> — emergencies and tests</span></li>
+      </ul>
+    </div>
+
+    <div class="sos-card">
+      <h3 class="bi"><span class="zh">急救电话</span><span class="en">Emergency numbers</span></h3>
+      <div class="sos-list bi">
+        <a href="tel:120"><span><span class="zh">救护车</span><span class="en">Ambulance</span></span><span class="num">120</span></a>
+        <a href="tel:110"><span><span class="zh">报警</span><span class="en">Police</span></span><span class="num">110</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 6 学习 ================= -->
+  <section id="s6">
+    <div class="sec-h">
+      <div class="no">6</div>
+      <h2 class="bi"><span class="zh">上课与学习</span><span class="en">Classes & study</span></h2>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">学习通怎么用</span><span class="en">Using the Xuexitong app</span></h3>
+      <ol class="steps bi">
+        <li><span class="zh">下载「学习通」，用手机号注册。</span><span class="en">Install the app and register with your phone number.</span></li>
+        <li><span class="zh">扫码或输入老师给的课程码，加入课程。</span><span class="en">Scan the QR code or enter the course code from your teacher.</span></li>
+        <li><span class="zh">资料、PPT、作业都在课程里，考勤签到也在上面。</span><span class="en">Slides, homework and attendance sign-in are all inside the course.</span></li>
+        <li><span class="zh">不同老师用不同平台，开学第一节课记得问清楚。</span><span class="en">Teachers use different platforms — ask in the first class.</span></li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">这些都可以主动问老师要</span><span class="en">Things you can always ask for</span></h3>
+      <ul class="bi">
+        <li><span class="zh">课程大纲（course outline）— 知道这学期要学什么</span><span class="en">A course outline — so you know the topics in advance</span></li>
+        <li><span class="zh">PPT 和讲义 — 最好提前给，方便你翻译</span><span class="en">Slides and handouts — ideally before class, so you can translate</span></li>
+        <li><span class="zh">考试时间 — 越早知道越好</span><span class="en">Exam dates — the earlier the better</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">图书馆</span><span class="en">Library</span></h3>
+      <ul class="bi">
+        <li><span class="zh">刷校园卡进馆，借书在自助机上操作，不会就找志愿者</span><span class="en">Tap your campus card to enter; borrow with the self-service machine</span></li>
+        <li><span class="zh">线上数据库要在校园网内访问，需先完成微信企业认证 — 教程见网页「学习」页</span><span class="en">Online databases need the campus network and WeChat enterprise verification</span></li>
+        <li><span class="zh">想看英文书？告诉志愿者，我们会向图书馆反映采购需求</span><span class="en">Need English books? Tell a volunteer — we report requests to the library</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ================= 7 紧急 ================= -->
+  <section id="s7">
+    <div class="sec-h warn">
+      <div class="no">!</div>
+      <h2 class="bi"><span class="zh">紧急联系</span><span class="en">Emergency contacts</span></h2>
+    </div>
+
+    <div class="sos-card">
+      <h3 class="bi"><span class="zh">存进手机，别只留在网页里</span><span class="en">Save these to your phone</span></h3>
+      <div class="sos-list bi">
+        <a href="tel:10000000000"><span><span class="zh">志愿者值班电话</span><span class="en">Volunteer duty phone</span></span><span class="num">待填</span></a>
+        <a href="tel:110"><span><span class="zh">报警</span><span class="en">Police</span></span><span class="num">110</span></a>
+        <a href="tel:120"><span><span class="zh">急救</span><span class="en">Ambulance</span></span><span class="num">120</span></a>
+        <a href="tel:119"><span><span class="zh">火警</span><span class="en">Fire</span></span><span class="num">119</span></a>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 class="bi"><span class="zh">值班时间</span><span class="en">Duty hours</span></h3>
+      <p class="bi">
+        <span class="zh">每晚 20:00–22:00 群里有人在线答疑；其余时间有急事直接打上面的值班电话。</span>
+        <span class="en">A volunteer is online in the group chat from 20:00 to 22:00 daily. Outside those hours, call the duty phone for urgent matters.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= 8 FAQ ================= -->
+  <section id="s8">
+    <div class="sec-h">
+      <div class="no">?</div>
+      <h2 class="bi"><span class="zh">常见问题</span><span class="en">FAQ</span></h2>
+    </div>
+
+    <details>
+      <summary class="bi"><span class="zh">护照丢了怎么办？</span><span class="en">I lost my passport</span></summary>
+      <div class="ans bi">
+        <span class="zh">第一步：立刻告诉志愿者和老师，并到派出所报警拿报案证明；第二步：联系你国家的驻华使领馆补办护照；第三步：拿到新护照后重新办理签证/居留许可。整个过程我们会全程陪你去。</span>
+        <span class="en">Step 1: tell a volunteer and your teacher, and report it to the police station for a certificate. Step 2: contact your embassy to replace the passport. Step 3: re-apply for your visa/residence permit with the new passport. We will accompany you throughout.</span>
+      </div>
+    </details>
+
+    <details>
+      <summary class="bi"><span class="zh">手机卡没信号 / 流量用完了</span><span class="en">No signal or data</span></summary>
+      <div class="ans bi">
+        <span class="zh">先看手机是不是开了飞行模式；再重启一次。还是不行就在群里说，我们带你去营业厅查（太谷城区可一趟办完）。</span>
+        <span class="en">Check aeroplane mode, then restart. If it still fails, post in the group — we will take you to the China Mobile branch.</span>
+      </div>
+    </details>
+
+    <details>
+      <summary class="bi"><span class="zh">食堂卡怎么充值？</span><span class="en">How to top up my canteen card</span></summary>
+      <div class="ans bi">
+        <span class="zh">食堂门口有自助充值机，也可以问志愿者带你操作一次。第一次充 50–100 元就够用一段时间。</span>
+        <span class="en">There are self-service machines at the canteen entrance, or ask a volunteer to show you. ¥50–100 lasts a while.</span>
+      </div>
+    </details>
+
+    <details>
+      <summary class="bi"><span class="zh">宿舍停电、没热水、要报修</span><span class="en">Power, hot water or repairs</span></summary>
+      <div class="ans bi">
+        <span class="zh">先找宿舍管理员；说不清楚就在群里发照片和位置，志愿者帮你翻译并联系后勤。</span>
+        <span class="en">Start with the dorm manager. If language is a problem, send a photo and your location in the group — a volunteer will translate and contact maintenance.</span>
+      </div>
+    </details>
+
+    <details>
+      <summary class="bi"><span class="zh">我没找到答案</span><span class="en">I still have a question</span></summary>
+      <div class="ans bi">
+        <span class="zh">在群里直接问，或者把问题写在下面这行——志愿者每天会看一次，常见问题会补进这一页。</span>
+        <span class="en">Ask in the group chat. Volunteers check daily and add frequent questions to this page.</span>
+      </div>
+    </details>
+  </section>
+
+  <footer>
+    <div class="bi">
+      <span class="zh">本页由国际交流协会志愿者整理 · 信息如有变化以学校通知为准</span>
+      <span class="en">Prepared by ICA volunteers. School notices take precedence.</span>
+    </div>
+  </footer>
+
+</div>
+
+<div class="tabbar">
+  <a class="grp bi" href="#s8"><span class="zh">我要提问</span><span class="en">Ask</span></a>
+  <a class="call bi" href="tel:10000000000"><span class="zh">紧急求助</span><span class="en">Emergency</span></a>
+</div>
+
+<!-- 复用的校园景点坐标（来自课设《校园导游图系统》的 OCR 数据，可选加载） -->
+<script src="map_data.js"></script>
+<!-- 全量地点清单（依据同一张底图的全部文字标签整理，含中英文名与分类） -->
+<script src="校园地图节点.js"></script>
+<script>
+  // ================= 语言三态切换 =================
+  document.querySelectorAll('.lang button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.body.className = 'mode-' + btn.dataset.mode;
+      document.querySelectorAll('.lang button').forEach(function (b) { b.classList.remove('on'); });
+      btn.classList.add('on');
+    });
+  });
+
+  // ================= 校园地图 =================
+  // 坐标系沿用课设 map_data.js：x 为横向百分比，y 从底边起算（OCR 像素坐标翻转而来）。
+  // 浏览器 CSS 的 top 从顶边起算，所以渲染时统一换算 top = 100 - y。
+  var CAT = {
+    dorm:    { c: '#FF4D8D', zh: '住',   en: 'Dorm' },
+    food:    { c: '#35D07F', zh: '吃',   en: 'Food' },
+    service: { c: '#FF8A3D', zh: '服务', en: 'Service' },
+    study:   { c: '#4DA3FF', zh: '学',   en: 'Study' },
+    medical: { c: '#FF5A5A', zh: '医',   en: 'Medical' },
+    sport:   { c: '#7C5CFC', zh: '运动', en: 'Sport' },
+    gate:    { c: '#FFD60A', zh: '门',   en: 'Gate' }
+  };
+
+  // 点位坐标来自对官方总平面图的逐块读图（网格法），不再依赖 OCR 识别
+  var SPOTS = [
+    { n: 1,  zh: '留学生公寓', en: 'International dorm', x: 36, y: 55.7, cat: 'dorm', todo: true,
+      zhNote: '楼号待确认：西区 21#–24# 还是东区 11#–20#，报到时问宿管',
+      enNote: 'Which building is still unconfirmed — ask the dorm office on arrival' },
+    { n: 2,  zh: '图书馆', en: 'Library', x: 35.2, y: 38.5, cat: 'study',
+      zhNote: '刷校园卡进馆', enNote: 'Tap your campus card to enter' },
+    { n: 3,  zh: '教学主楼', en: 'Main teaching building', x: 60.1, y: 41.5, cat: 'study',
+      zhNote: '大部分课在这儿', enNote: 'Where most classes are held' },
+    { n: 4,  zh: '实验大楼', en: 'Lab building', x: 40.6, y: 50, cat: 'study',
+      zhNote: '研究生做实验、跑数据', enNote: 'Labs for research students' },
+    { n: 5,  zh: '校医院', en: 'Campus clinic', x: 57.5, y: 51.1, cat: 'medical',
+      zhNote: '小病开药；夜间值班人手少，重病直接去市区医院',
+      enNote: 'Minor issues only; night duty is thin — for serious cases go to the city hospital' },
+    { n: 6,  zh: '饮食中心 · 生活服务中心', en: 'Canteen & living service centre', x: 59.8, y: 20.7, cat: 'food',
+      zhNote: '主食堂，旁边就是超市和日用品，吃饭买东西都在这片',
+      enNote: 'Main canteen, with the supermarket and daily goods right next door' },
+    { n: 7,  zh: '一站式学生服务中心', en: 'One-stop student service centre', x: 74.2, y: 21.4, cat: 'service',
+      zhNote: '办证明、交表、问流程', enNote: 'Certificates, forms and paperwork' },
+    { n: 8,  zh: '菜鸟驿站', en: 'Parcel station', x: 77.5, y: 17.6, cat: 'service',
+      zhNote: '取快递、寄快递', enNote: 'Collect and send parcels' },
+    { n: 9,  zh: '中国工商银行', en: 'ICBC bank', x: 50, y: 61, cat: 'service',
+      zhNote: '校内银行网点，办卡可先来问清楚材料',
+      enNote: 'Bank branch on campus — ask here first what documents you need' },
+    { n: 10, zh: '邮政营业厅', en: 'Post office', x: 44, y: 44, cat: 'service',
+      zhNote: '体检报告邮寄单就是在这儿办的', enNote: 'Where the medical report is posted from' },
+    { n: 11, zh: '农贸市场', en: 'Market', x: 57.7, y: 62.3, cat: 'food',
+      zhNote: '买菜、水果，自己做饭来这儿', enNote: 'Vegetables and fruit if you cook' },
+    { n: 12, zh: '游泳馆', en: 'Swimming pool', x: 66.8, y: 21.8, cat: 'sport' },
+    { n: 13, zh: '体育场', en: 'Sports ground', x: 70.5, y: 30.1, cat: 'sport',
+      zhNote: '跑步、踢球', enNote: 'Running track and football pitch' },
+    { n: 14, zh: '室内运动馆', en: 'Indoor sports hall', x: 69.3, y: 36.8, cat: 'sport',
+      zhNote: '图上标的是「体操舞蹈室」，室内运动来这儿',
+      enNote: 'Labelled 体操舞蹈室 on the map — indoor sports' },
+    { n: 15, zh: '篮球场', en: 'Basketball courts', x: 71.2, y: 20.6, cat: 'sport' },
+    { n: 16, zh: '西门', en: 'West gate', x: 29, y: 46, cat: 'gate',
+      zhNote: '公交、打车主要走这个门', enNote: 'Main gate for buses and taxis' },
+    { n: 17, zh: '新北门', en: 'North gate', x: 77.4, y: 38.4, cat: 'gate' },
+    { n: 18, zh: '旧北门', en: 'Old north gate', x: 55.5, y: 54.1, cat: 'gate' },
+    { n: 19, zh: '农场门', en: 'Farm gate', x: 39.9, y: 59.6, cat: 'gate' }
+  ];
+
+  (function () {
+    var pinsBox = document.getElementById('pins');
+    var legend  = document.getElementById('legend');
+    var info    = document.getElementById('mapInfo');
+    if (!pinsBox || !legend) return;
+
+    var infoZh = info.querySelector('.zh');
+    var infoEn = info.querySelector('.en');
+
+    function select(s) {
+      SPOTS.forEach(function (o) { if (o.el) o.el.classList.remove('sel'); });
+      if (s.el) s.el.classList.add('sel');
+      infoZh.textContent = s.zh + (s.zhNote ? '：' + s.zhNote : '');
+      infoEn.textContent = s.en + (s.enNote ? ': ' + s.enNote : '');
+    }
+
+    SPOTS.forEach(function (s) {
+      var color = CAT[s.cat].c;
+
+      var pin = document.createElement('button');
+      pin.type = 'button';
+      pin.className = 'pin' + (s.todo ? ' todo' : '');
+      pin.style.left = s.x + '%';
+      pin.style.top  = (100 - s.y) + '%';
+      pin.style.background = color;
+      pin.textContent = s.n;
+      pin.dataset.cat = s.cat;
+      pin.setAttribute('aria-label', s.zh + ' / ' + s.en);
+      pin.addEventListener('click', function () { select(s); });
+      pinsBox.appendChild(pin);
+      s.el = pin;
+
+      var li = document.createElement('li');
+      li.dataset.cat = s.cat;
+      li.innerHTML =
+        '<span class="n" style="background:' + color + '">' + s.n + '</span>' +
+        '<span class="bi">' +
+          '<b class="zh">' + s.zh + '</b><span class="en">' + s.en + '</span>' +
+          (s.zhNote
+            ? '<span class="sub zh">' + s.zhNote + '</span><span class="sub en">' + s.enNote + '</span>'
+            : '') +
+        '</span>';
+      li.addEventListener('click', function () { select(s); });
+      legend.appendChild(li);
+      s.li = li;
+    });
+
+    // ---------- 全量地点图层（校园地图节点.js，依据底图标签逐个整理） ----------
+    var NODES = (typeof MAP_NODES !== 'undefined') ? MAP_NODES : [];
+    var dotsBox = document.getElementById('dots');
+    var btnDots = document.getElementById('btnDots');
+    var searchBox = document.getElementById('mapSearch');
+    var nodeEls = {};
+    dotsBox.style.display = 'none';
+    if (!NODES.length) { btnDots.style.display = 'none'; }
+    else { btnDots.textContent = '＋全部地点 ' + NODES.length; }
+
+    function buildNodes() {
+      if (dotsBox.dataset.built) return;
+      NODES.forEach(function (nd) {
+        var el = document.createElement('button');
+        el.type = 'button';
+        el.className = 'dot' + (nd.inset ? ' inset' : '');
+        el.style.left = nd.x + '%';
+        el.style.top  = (100 - nd.y) + '%';
+        el.style.background = (CAT[nd.cat] || { c: '#777' }).c;
+        el.dataset.cat = nd.inset ? 'inset' : nd.cat;
+        el.title = nd.name + ' / ' + nd.en;
+        el.addEventListener('click', function () { focusNode(nd); });
+        dotsBox.appendChild(el);
+        nodeEls[nd.id] = el;
+      });
+      dotsBox.dataset.built = '1';
+    }
+
+    function setLayer(on) {
+      if (on) buildNodes();
+      dotsBox.style.display = on ? '' : 'none';
+      btnDots.classList.toggle('on', on);
+      btnDots.textContent = (on ? '−全部地点 ' : '＋全部地点 ') + NODES.length;
+    }
+
+    function focusNode(nd) {
+      setLayer(true);
+      dotsBox.querySelectorAll('.dot.sel').forEach(function (e) { e.classList.remove('sel'); });
+      var el = nodeEls[nd.id];
+      if (el) el.classList.add('sel');
+      infoZh.textContent = nd.name + (nd.inset ? '（在牧站区域，详见地图左上角插图）' : '');
+      infoEn.textContent = nd.en + (nd.inset ? ' (in the livestock station area — see the inset at the top-left)' : '');
+      document.getElementById('mapbox').scrollIntoView({ block: 'center' });
+    }
+
+    // 分类筛选：同时作用于常用点和全量图层
+    document.querySelectorAll('.chip[data-cat]').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        document.querySelectorAll('.chip[data-cat]').forEach(function (c) { c.classList.remove('on'); });
+        chip.classList.add('on');
+        var cat = chip.dataset.cat, all = (cat === 'all');
+        SPOTS.forEach(function (s) {
+          var hit = all || s.cat === cat;
+          if (s.el) s.el.classList.toggle('dim', !hit);
+          if (s.li) s.li.style.display = hit ? '' : 'none';
+        });
+        Object.keys(nodeEls).forEach(function (id) {
+          nodeEls[id].classList.toggle('dim', !all && nodeEls[id].dataset.cat !== cat);
+        });
+      });
+    });
+
+    btnDots.addEventListener('click', function () { setLayer(dotsBox.style.display === 'none'); });
+
+    // 中英文搜索：命中即定位
+    searchBox.addEventListener('input', function () {
+      var q = this.value.trim().toLowerCase();
+      if (!q) return;
+      for (var i = 0; i < NODES.length; i++) {
+        var nd = NODES[i];
+        if (nd.name.toLowerCase().indexOf(q) >= 0 || (nd.en || '').toLowerCase().indexOf(q) >= 0) {
+          focusNode(nd);
+          return;
+        }
+      }
+    });
+  })();
+</script>
+</body>
+</html>
