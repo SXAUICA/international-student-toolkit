@@ -1,6 +1,6 @@
 /* 校园地图节点 —— 依据课设 OCR 全量标签整理
    坐标系与 map_data.js 一致：x 为横向百分比，y 从底边起算
-   共 199 个点；inset:true 表示该点位于左上角「牧站总平面图」插图内，坐标已归到主图牧站区域 */
+   共 200 个点；inset:true 表示该点位于左上角「牧站总平面图」插图内，坐标已归到主图牧站区域 */
 const MAP_NODES = [
   {id:1,name:"教工餐厅",en:"Staff Canteen",cat:"shop",x:47.26,y:70.44},
   {id:2,name:"农贸市场",en:"Farmers Market",cat:"shop",x:57.74,y:62.29},
@@ -166,7 +166,7 @@ const MAP_NODES = [
   {id:162,name:"5#公寓",en:"Dorm 5",cat:"dorm",x:52.39,y:29.1},
   {id:163,name:"15#公寓",en:"Dorm 15",cat:"dorm",x:79.03,y:28.99},
   {id:164,name:"2#供热站",en:"Heating Station 2",cat:"utility",x:44.52,y:28.96},
-  {id:165,name:"生物能研究所",en:"生物能 Institute",cat:"study",x:22.56,y:28.32},
+  {id:165,name:"分子农业与生物能研究所",en:"Molecular Agriculture & Bioenergy Institute",cat:"study",x:22.56,y:28.6},
   {id:166,name:"草地",en:"Lawn",cat:"other",x:87.1,y:28.29},
   {id:167,name:"水保楼",en:"Soil & Water Conservation Building",cat:"study",x:42.16,y:28.22},
   {id:168,name:"勤耕园",en:"Qingeng Garden",cat:"other",x:36.01,y:27.83},
@@ -200,5 +200,7 @@ const MAP_NODES = [
   {id:196,name:"城建实验室",en:"Urban Construction Laboratory",cat:"study",x:34.54,y:18.24},
   {id:197,name:"农工院车库",en:"Engineering Garage",cat:"other",x:29.43,y:17.67},
   {id:198,name:"7#供热站",en:"Heating Station 7",cat:"utility",x:74.85,y:17.32},
-  {id:199,name:"研究中心",en:"研究 Centre",cat:"study",x:23.75,y:16.86}
+  {id:199,name:"功能农业工程研究中心",en:"Functional Agriculture Engineering Centre",cat:"study",x:23.8,y:17.2},
+  {id:200,name:"外事处",en:"International Office",cat:"shop",x:41.6,y:37.2,
+   note:"位于南院15号楼",noteEn:"In South Court Building 15"}
 ];

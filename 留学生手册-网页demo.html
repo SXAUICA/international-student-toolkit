@@ -558,7 +558,7 @@
         <button type="button" class="chip" data-cat="gate">门 Gate</button>
         <button type="button" class="chip" data-cat="farm">试验场 Farm</button>
         <button type="button" class="chip" data-cat="inset">牧站 Inset</button>
-        <button type="button" class="chip" id="btnDots">＋全部地点 199</button>
+        <button type="button" class="chip" id="btnDots">＋全部地点 200</button>
       </div>
       <div class="mapsearch">
         <input id="mapSearch" type="search" autocomplete="off"
@@ -575,8 +575,8 @@
       </p>
       <ul class="legend" id="legend"></ul>
       <p class="mapnote bi">
-        <span class="zh">底图与坐标复用了本校《校园导游图系统》课设的高清地图和 126 个景点的 OCR 数据；<b>每个点位都已对照原图标签逐个核对过</b>。<b>留学生公寓楼号、保卫处、外事处、校门位置待确认</b>后再补上，正式版建议实地走一遍校准。</span>
-        <span class="en">Base map and spot coordinates reused from the campus-tour-guide course project (126 OCR-extracted spots); every pin was checked against the original map labels. <b>The international dorm, security office, international office and gate positions still need confirming.</b></span>
+        <span class="zh">底图与坐标来自本校《校园导游图系统》课设的高清地图与文字标签，<b>每个点位都已对照原图核对过</b>；共 200 个地点，可用上方搜索。外事处已按「南院15号楼」补上。<b>留学生公寓楼号、保卫处、校门位置待确认</b>，正式版建议实地走一遍校准。</span>
+        <span class="en">Base map and coordinates are taken from the campus-tour-guide course project; every pin was checked against the original map labels (200 places, use the search box above). The International Office has been added at South Court Building 15. <b>The international dorm, security office and gate positions still need confirming.</b></span>
       </p>
     </div>
 
@@ -836,7 +836,9 @@
       zhNote: '公交、打车主要走这个门', enNote: 'Main gate for buses and taxis' },
     { n: 17, zh: '新北门', en: 'North gate', x: 77.4, y: 38.4, cat: 'gate' },
     { n: 18, zh: '旧北门', en: 'Old north gate', x: 55.5, y: 54.1, cat: 'gate' },
-    { n: 19, zh: '农场门', en: 'Farm gate', x: 39.9, y: 59.6, cat: 'gate' }
+    { n: 19, zh: '农场门', en: 'Farm gate', x: 39.9, y: 59.6, cat: 'gate' },
+    { n: 20, zh: '外事处', en: 'International Office', x: 41.6, y: 37.2, cat: 'service',
+      zhNote: '位于南院15号楼', enNote: 'In South Court Building 15' }
   ];
 
   (function () {
@@ -926,8 +928,12 @@
       dotsBox.querySelectorAll('.dot.sel').forEach(function (e) { e.classList.remove('sel'); });
       var el = nodeEls[nd.id];
       if (el) el.classList.add('sel');
-      infoZh.textContent = nd.name + (nd.inset ? '（在牧站区域，详见地图左上角插图）' : '');
-      infoEn.textContent = nd.en + (nd.inset ? ' (in the livestock station area — see the inset at the top-left)' : '');
+      infoZh.textContent = nd.name
+        + (nd.note ? '：' + nd.note : '')
+        + (nd.inset ? '（在牧站区域，详见地图左上角插图）' : '');
+      infoEn.textContent = nd.en
+        + (nd.noteEn ? ' — ' + nd.noteEn : '')
+        + (nd.inset ? ' (in the livestock station area — see the inset at the top-left)' : '');
       document.getElementById('mapbox').scrollIntoView({ block: 'center' });
     }
 
